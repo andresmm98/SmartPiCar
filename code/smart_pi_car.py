@@ -2,6 +2,7 @@ import logging
 import picar
 import cv2
 import datetime
+import os
 
 class SmartPiCar(object):
 
@@ -39,7 +40,7 @@ class SmartPiCar(object):
         # Record video
         self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
         date_str = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
-        self.video = cv2.VideoWriter('../data/tmp/car_video%s.avi' % date_str,
+        self.video = cv2.VideoWriter('../data/videos/car_video%s.avi' % date_str,
                                      self.fourcc,
                                      20.0,
                                      (self.camera_width, self.camera_height))
@@ -83,6 +84,7 @@ class SmartPiCar(object):
         logging.info("Starting to drive at speed %s..." % speed)
         self.back_wheels.speed = speed
         i=0
+        os.chdir("../data/dataset")
         while self.camera.isOpened():
             # Get, write and show current frame
             _, frame = self.camera.read()
