@@ -1,5 +1,6 @@
-# footage of installation
+# footage and datasets
 footage/
+models/lane-navigation/data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
