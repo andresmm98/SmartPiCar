@@ -81,22 +81,22 @@ class SmartPiCar(object):
         """ Drive using A and D keys """
         pressed_key = cv2.waitKey(50) & 0xFF
         if pressed_key == ord('a'):
-            if self.steering_angle > 50: self.steering_angle -= 3
+            if self.steering_angle > 40: self.steering_angle -= 3
             self.front_wheels.turn(self.steering_angle)
         elif pressed_key == ord('d'):
-            if self.steering_angle < 130: self.steering_angle += 3
+            if self.steering_angle < 140: self.steering_angle += 3
             self.front_wheels.turn(self.steering_angle)
         elif pressed_key == ord('q'):
             self.cleanup()
 
-    def drive(self, mode):
+    def drive(self, mode, speed=0):
         """ Start driving """
-        i=0
+        self.back_wheels.speed = speed
+        i = 0
         if mode == "auto":
-            self.back_wheels.speed = 40
 
             logging.info("Initiating autonomous driving...")
-            logging.info(f"Starting to drive at speed {speed}...")
+            logging.info("Starting to drive at speed {speed}...")
             
             while self.camera.isOpened():
                 _, frame = self.camera.read()
@@ -107,11 +107,15 @@ class SmartPiCar(object):
 
                 i += 1
                 
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+                key = cv2.waitKey(1)
+                if key & 0xFF == ord('q'):
                     self.cleanup()
                     break
+                elif key & 0xFF == ord('p'):
+                    self.back_wheels.speed = 0
+                elif key & 0xFF == ord('g'):
+                    self.back_wheels.speed = speed
         elif mode == "training": 
-            self.back_wheels.speed = 20
 
             logging.info("Initiating manual driving...")
             logging.info(f"Starting to drive at speed {speed}...")
@@ -149,7 +153,10 @@ class SmartPiCar(object):
 
 def main(mode):
     with SmartPiCar() as car:
-        car.drive(mode)
+        if mode == "auto":
+            car.drive(mode,40)
+        else:
+            car.drive(mode,20)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(asctime)s: %(message)s')
@@ -160,4 +167,4 @@ if __name__ == '__main__':
             sys.exit()
         else: main(sys.argv[1])
 
-    main("auto")
+    else: main("auto")
