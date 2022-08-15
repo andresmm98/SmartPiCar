@@ -6,6 +6,7 @@ import sys
 import os
 import time
 from autonomous_driver import LaneFollower
+from hand_coded_lane_follower import HandCodedLaneFollower
 
 mode = 'auto'
 
@@ -45,6 +46,7 @@ class SmartPiCar(object):
 
         self.short_date_str = datetime.datetime.now().strftime("%d%H%M")
         self.lane_follower = LaneFollower(self)
+        self.hand_coded_lane_follower = HandCodedLaneFollower(self)
         
         ''' # Record video
         self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -86,6 +88,10 @@ class SmartPiCar(object):
         elif pressed_key == ord('d'):
             if self.steering_angle < 140: self.steering_angle += 3
             self.front_wheels.turn(self.steering_angle)
+        elif key & 0xFF == ord('p'):
+            self.back_wheels.speed = 0
+        elif key & 0xFF == ord('g'):
+            self.back_wheels.speed = speed
         elif pressed_key == ord('q'):
             self.cleanup()
 
@@ -115,6 +121,7 @@ class SmartPiCar(object):
                     self.back_wheels.speed = 0
                 elif key & 0xFF == ord('g'):
                     self.back_wheels.speed = speed
+        
         elif mode == "training": 
 
             logging.info("Initiating manual driving...")
@@ -122,19 +129,43 @@ class SmartPiCar(object):
             os.chdir('../footage')
 
             while self.camera.isOpened():
-                # Get, write and show current frame
                 _, frame = self.camera.read()
-                # self.video.write(frame)
                 cv2.imshow('Video',frame)
 
                 self.manual_driver()
 
-                # Save frame and steering angle
                 cv2.imwrite('v%s-f%03d-a%03d.png' % (self.short_date_str, i, self.steering_angle), frame)
                 
-                i += 1
+                i += 1 
                 time.sleep(0.2)
 
+        elif mode == "hand_coded":
+            self.back_wheels.speed = 30
+
+            logging.info("Initiating manual driving...")
+            logging.info(f"Starting to drive at speed {speed}...")
+
+            while self.camera.isOpened():
+                # Get, write and show current frame
+                _, frame = self.camera.read()
+                # self.video.write(frame)
+
+                image_lane = self.hand_coded_lane_follower.follow_lane(frame)
+
+                cv2.imshow('Video',image_lane)
+                
+                key = cv2.waitKey(1)
+                if key & 0xFF == ord('q'):
+                    self.cleanup()
+                    break
+                elif key & 0xFF == ord('p'):
+                    self.back_wheels.speed = 0
+                elif key & 0xFF == ord('g'):
+                    self.back_wheels.speed = speed
+
+                i += 1
+            
+        
         else:
             self.back_wheels.speed = 20
 
@@ -162,7 +193,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(asctime)s: %(message)s')
 
     if len(sys.argv) > 1:
-        if sys.argv[1] not in ['manual', 'training','auto']:
+        if sys.argv[1] not in ['manual', 'training','auto', 'hand_coded']:
             logging.error('Please, write the driving mode after the name of the program:\n - "auto" for autonomous driving\n - "manual" for manual driving\n - "training" for collecting data with manual driving')
             sys.exit()
         else: main(sys.argv[1])
