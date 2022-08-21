@@ -125,7 +125,7 @@ class SmartPiCar(object):
                 elif key & 0xFF == ord('g'):
                     self.back_wheels.speed = speed
         
-        elif mode == "entrenamiento manual": 
+        elif mode == "entrenamiento_manual": 
 
             logging.info("Iniciando la conducción manual...")
             logging.info(f"Arrancando a una velocidad de {speed}...")
@@ -142,7 +142,7 @@ class SmartPiCar(object):
                 i += 1 
                 time.sleep(0.2)
 
-        elif mode == "entrenamiento automático":
+        elif mode == "entrenamiento_auto":
             self.back_wheels.speed = 30
 
             logging.info("Iniciando la conducción autónoma...")
@@ -197,10 +197,10 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1:
         if sys.argv[1] not in ['manual', 'training','auto', 'hand_coded']:
-            logging.error('Por favor, escriba el modo de conducción deseado después del nombre del programa:\n \
-- "auto" para conducción autónoma\n - "manual" para conducción mediante el teclado\n \
-- "entrenamiento manual" para conducción mediante el teclado recopilando datos\n \
-- "entrenamiento automático" para conducción autónoma (sin inteligencia artificial recopilando datos')
+            logging.error('Por favor, escriba el modo de conducción deseado después del nombre del programa.\n \
+- "manual": conducción mediante el teclado\n - "auto": conducción autónoma mediante inteligencia artificial\n \
+- "entrenamiento_manual": conducción mediante el teclado recopilando datos\n \
+- "entrenamiento_auto": conducción autónoma (sin inteligencia artificial) recopilando datos')
             sys.exit()
         else: main(sys.argv[1])
 
