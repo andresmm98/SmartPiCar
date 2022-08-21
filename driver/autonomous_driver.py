@@ -10,7 +10,7 @@ class LaneFollower(object):
 
     def __init__(self,
                  car=None,
-                 model_path='/home/pi/Smart-Pi-Car/models/lane-navigation/lane-navigation-model-v3.tflite'):
+                 model_path='/home/pi/Smart-Pi-Car/models/lane-navigation-model-finetuned.tflite'):
         logging.info('Poniendo a punto el procesador...')
 
         self.car = car
