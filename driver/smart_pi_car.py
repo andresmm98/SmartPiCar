@@ -105,7 +105,7 @@ class SmartPiCar(object):
         if mode == "auto":
 
             logging.info("Iniciando la conducción autónoma...")
-            logging.info(f"Arrancando a una velocidad de {self.back_wheels.speed}...")
+            logging.info(f"Arrancando a una velocidad de {speed}...")
             
             while self.camera.isOpened():
                 _, frame = self.camera.read()
@@ -128,7 +128,7 @@ class SmartPiCar(object):
         elif mode == "entrenamiento_manual": 
 
             logging.info("Iniciando la conducción manual...")
-            logging.info(f"Arrancando a una velocidad de {self.back_wheels.speed}...")
+            logging.info(f"Arrancando a una velocidad de {speed}...")
             os.chdir('../footage')
 
             while self.camera.isOpened():
@@ -146,7 +146,7 @@ class SmartPiCar(object):
             self.back_wheels.speed = 30
 
             logging.info("Iniciando la conducción autónoma...")
-            logging.info(f"Arrancando a una velocidad de {self.back_wheels.speed}...")
+            logging.info(f"Arrancando a una velocidad de {speed}...")
 
             while self.camera.isOpened():
                 # Get, write and show current frame
@@ -173,7 +173,7 @@ class SmartPiCar(object):
             self.back_wheels.speed = 20
 
             logging.info("Iniciando la conducción manual...")
-            logging.info(f"Arrancando a una velocidad de {self.back_wheels.speed}...")
+            logging.info(f"Arrancando a una velocidad de {speed}...")
 
             while self.camera.isOpened():
                 # Get, write and show current frame
