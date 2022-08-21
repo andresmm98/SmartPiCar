@@ -11,7 +11,7 @@ _SHOW_IMAGE = False
 class HandCodedLaneFollower(object):
 
     def __init__(self, car=None):
-        logging.info('Creating a HandCodedLaneFollower...')
+        logging.info('Iniciando el código de conducción')
         self.car = car
         self.curr_steering_angle = 90
 
