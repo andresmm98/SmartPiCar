@@ -197,10 +197,10 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1:
         if sys.argv[1] not in ['manual', 'training','auto', 'hand_coded']:
-            logging.error('Por favor, escriba el modo de conducción deseado después del nombre del programa:\n\
-                 - "auto" para conducción autónoma\n - "manual" para conducción mediante el teclado\n\
-                     - "entrenamiento manual" para conducción mediante el teclado recopilando datos\n\
-                         - "entrenamiento automático" para conducción autónoma (sin inteligencia artificial recopilando datos')
+            logging.error('Por favor, escriba el modo de conducción deseado después del nombre del programa:\n \
+- "auto" para conducción autónoma\n - "manual" para conducción mediante el teclado\n \
+- "entrenamiento manual" para conducción mediante el teclado recopilando datos\n \
+- "entrenamiento automático" para conducción autónoma (sin inteligencia artificial recopilando datos')
             sys.exit()
         else: main(sys.argv[1])
 
