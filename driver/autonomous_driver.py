@@ -11,7 +11,7 @@ class LaneFollower(object):
     def __init__(self,
                  car=None,
                  model_path='/home/pi/Smart-Pi-Car/models/lane-navigation-model-finetuned.tflite'):
-        logging.info('Poniendo a punto el procesador...')
+        logging.info('Poniendo a punto el procesador')
 
         self.car = car
         self.curr_steering_angle = 90
@@ -25,7 +25,7 @@ class LaneFollower(object):
 
         new_steering_angle = self.compute_steering_angle(frame)
         self.curr_steering_angle = self.stabilize_steering_angle(new_steering_angle)
-        logging.debug("curr_steering_angle = %d" % self.curr_steering_angle)
+        logging.debug(f"Ángulo de giro: {self.curr_steering_angle - 90} grados")
 
         if self.car is not None:
             self.car.front_wheels.turn(self.curr_steering_angle)
@@ -53,7 +53,6 @@ class LaneFollower(object):
         steering_angle = self.interpreter.get_tensor(output_details['index'])
 
         steering_angle = int(steering_angle + 0.5) # redondeo
-        logging.debug(f'Ángulo de giro: {steering_angle - 90}')
         return steering_angle
 
 def img_preprocess(image):
