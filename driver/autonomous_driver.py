@@ -44,20 +44,16 @@ class LaneFollower(object):
             stabilized_steering_angle = self.curr_steering_angle - max_angle_deviation
         return stabilized_steering_angle
             
-    def compute_steering_angle(self, frame):
-        """ Find the steering angle directly based on video frame
-            We assume that camera is calibrated to point to dead center
-        """
+    def compute_steering_angle(self, frame):        
+        input_frame = img_preprocess(frame)
+        common.set_input(self.interpreter, input_frame)
+
         output_details = self.interpreter.get_output_details()[0]
-        
-        preprocessed = img_preprocess(frame)
-        X = np.asarray([preprocessed])
-        common.set_input(self.interpreter, X)
         self.interpreter.invoke()
         steering_angle = self.interpreter.get_tensor(output_details['index'])
 
-        steering_angle = int(steering_angle + 0.5) # round the nearest integer
-        logging.debug('new steering angle: %s' % steering_angle)
+        steering_angle = int(steering_angle + 0.5) # redondeo
+        logging.debug(f'Ángulo de giro: {steering_angle - 90}')
         return steering_angle
 
 def img_preprocess(image):
