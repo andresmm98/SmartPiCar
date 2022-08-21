@@ -11,7 +11,7 @@ class LaneFollower(object):
     def __init__(self,
                  car=None,
                  model_path='/home/pi/Smart-Pi-Car/models/lane-navigation/lane-navigation-model-v3.tflite'):
-        logging.info('Creating a LaneFollower...')
+        logging.info('Poniendo a punto el procesador...')
 
         self.car = car
         self.curr_steering_angle = 90
