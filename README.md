@@ -3,13 +3,13 @@
 
 ## EL HARDWARE
 
-Sun Founder PiCar-V kit
+Sun Founder PiCar-V kit 
 ![image](https://user-images.githubusercontent.com/74978050/189338200-6830eb05-ace2-41a8-995a-be26a52df5c1.png)
 
-Raspberry Pi Model 3B+
+Raspberry Pi Model 3B+ 
 ![image](https://user-images.githubusercontent.com/74978050/189338829-ff91b5ce-db12-42d2-994b-6d7aa143d27d.png)
 
-Acelerador Coral Edge TPU
+Acelerador Coral Edge TPU 
 ![image](https://user-images.githubusercontent.com/74978050/189338830-47b72149-811e-47d0-9358-f1a2c3cdd8c4.png)
 
 Complementos:
