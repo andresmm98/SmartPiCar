@@ -26,7 +26,7 @@ y diversas bibliotecas de aprendizaje automático como Tensorflow, Keras y OpenC
 
 ## GUÍA DE MONTAJE
 
-A modo de resumen orientativo, los pasos a seguir para la preparación del coche son sido los siguientes:
+A modo de resumen orientativo, los pasos a seguir para la preparación del coche han sido los siguientes:
 
 1. Formateo de la tarjeta micro SD en formato FAT32 e instalación del sistema operativo Raspberry Pi OS
 2. Montaje del coche, siguiendo las instrucciones del fabricante
