@@ -1,3 +1,9 @@
+#------------------------------------------------------------------------------
+# El programa crea una clase LaneFollower,
+# la cual calcula el ángulo de giro del coche para una imagen de entrada
+# utilizando un modelo de aprendizaje profundo compilado en formato .tflite.
+#------------------------------------------------------------------------------
+
 import cv2
 import numpy as np
 import logging
@@ -5,7 +11,6 @@ import math
 from pycoral.utils import edgetpu
 from pycoral.adapters import common
 
-# previous model: /home/pi/DeepPiCar/models/autonomous_car_model.tflite
 class LaneFollower(object):
 
     def __init__(self,
@@ -16,12 +21,13 @@ class LaneFollower(object):
         self.car = car
         self.curr_steering_angle = 90
         
-        # Initialize the TF interpreter
+        # Inicializa el intérprete de Tensorflow
         self.interpreter = edgetpu.make_interpreter(model_path)
         self.interpreter.allocate_tensors()
 
+
     def follow_lane(self, frame):
-        # Main entry point of the lane follower
+        ''' Método principal de la clase, llama a los demás '''
 
         new_steering_angle = self.compute_steering_angle(frame)
         self.curr_steering_angle = self.stabilize_steering_angle(new_steering_angle)
@@ -33,8 +39,10 @@ class LaneFollower(object):
 
         return final_frame
 
+
     def stabilize_steering_angle(self, new_steering_angle):
-        # set max deviation from last angle to 3 degrees
+        ''' Acota el ángulo de giro a un máximo de 3 grados respecto al anterior '''
+
         stabilized_steering_angle = new_steering_angle
         max_angle_deviation = 3
         angle_deviation = new_steering_angle - self.curr_steering_angle
@@ -44,7 +52,10 @@ class LaneFollower(object):
             stabilized_steering_angle = self.curr_steering_angle - max_angle_deviation
         return stabilized_steering_angle
             
-    def compute_steering_angle(self, frame):        
+
+    def compute_steering_angle(self, frame):
+        ''' Calcula el ángulo de giro mediante el modelo '''
+        
         input_frame = img_preprocess(frame)
         common.set_input(self.interpreter, input_frame)
 
@@ -55,33 +66,27 @@ class LaneFollower(object):
         steering_angle = int(steering_angle + 0.5) # redondeo
         return steering_angle
 
+
 def img_preprocess(image):
-    # cut top of image
+    ''' Ajusta el fotograma a la entrada del modelo '''
+
     height = len(image)
     image = image[int(height/2):,:,:]
 
-    # resize
     image = cv2.resize(image, (200,66))
 
-    # change to RGB
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    # normalize
     image = image / 255
     return image
 
-def display_heading_line(frame, steering_angle, line_color=(0, 0, 255), line_width=5, ):
+
+def display_heading_line(frame, steering_angle, line_color=(0, 0, 255), line_width=5):
+    ''' Muestra por pantalla una línea en la dirección a la que se dirije el coche '''
+    
     heading_image = np.zeros_like(frame)
     height, width, _ = frame.shape
 
-    # figure out the heading line from steering angle
-    # heading line (x1,y1) is always center bottom of the screen
-    # (x2, y2) requires a bit of trigonometry
-
-    # Note: the steering angle of:
-    # 0-89 degree: turn left
-    # 90 degree: going straight
-    # 91-180 degree: turn right 
     steering_angle_radian = steering_angle / 180.0 * math.pi
     x1 = int(width / 2)
     y1 = height
@@ -92,6 +97,7 @@ def display_heading_line(frame, steering_angle, line_color=(0, 0, 255), line_wid
     heading_image = cv2.addWeighted(frame, 0.8, heading_image, 1, 1)
 
     return heading_image
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

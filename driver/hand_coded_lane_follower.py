@@ -1,3 +1,11 @@
+#------------------------------------------------------------------------------
+# El programa crea una clase HandCodedLaneFollower,
+# la cual conduce el coche mediante una programación explícita.
+# 
+# Esta consiste en identificar los colores de las líneas de la calzada, 
+# encontrar las líneas presentes, unirlas en una para cada lado y calcular el ángulo promedio.
+#------------------------------------------------------------------------------
+
 import cv2
 import numpy as np
 import logging
@@ -15,22 +23,18 @@ class HandCodedLaneFollower(object):
         self.car = car
         self.curr_steering_angle = 90
 
+
     def follow_lane(self, frame):
-        # Main entry point of the lane follower
+        ''' Método principal de la clase, llama a los demás '''
         show_image("orig", frame)
 
         lane_lines, frame = detect_lane(frame)
-        final_frame = self.steer(frame, lane_lines)
 
-        return final_frame
-
-    def steer(self, frame, lane_lines):
-        logging.debug('steering...')
         if len(lane_lines) == 0:
-            logging.error('No lane lines detected, nothing to do.')
+            logging.error('No se ha detectado ninguna línea de calzada, sigue recto.')
             return frame
 
-        new_steering_angle = compute_steering_angle(frame, lane_lines) #- self.curr_steering_angle + 95
+        new_steering_angle = compute_steering_angle(frame, lane_lines)
         self.curr_steering_angle = stabilize_steering_angle(self.curr_steering_angle, new_steering_angle, len(lane_lines))
 
         if self.car is not None:
@@ -40,12 +44,11 @@ class HandCodedLaneFollower(object):
 
         return curr_heading_image
 
-
 ############################
-# Frame processing steps
+# Funciones para calcular el ángulo de giro
 ############################
 def detect_lane(frame):
-    logging.debug('detecting lane lines...')
+    logging.debug('Detectando las líneas de calzada...')
 
     edges = edges(frame)
     show_image('edges', edges)
@@ -65,24 +68,22 @@ def detect_lane(frame):
 
 
 def edges(image):
+    ''' Filtra los bordes de color rosa '''
     im_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     
-    # filter for pink lane lines
     lower_pink = np.array([150, 50, 120])
     upper_pink = np.array([180, 255, 255])
     mask = cv2.inRange(im_hsv, lower_pink, upper_pink)
 
-    # detect edges
     edges = cv2.Canny(mask, 200, 400)
 
     return edges
 
 
 def crop_top(image, cut):
+    ''' Corta la mitad superior de la imagen '''
     height, width = image.shape
     mask = np.zeros_like(image)
-
-    # only focus bottom half of the screen
 
     polygon = np.array([[
         (0, height * cut),
@@ -98,29 +99,29 @@ def crop_top(image, cut):
 
 
 def get_lines(edges):
-
+    ''' Obtiene las líneas presentes en una imagen '''
     lines = cv2.HoughLinesP(
         edges, 
-        np.array([]), # output array
-        rho=1, # pixel distance
-        angle=(np.pi / 180), # angular distance in radians
-        min_threshold=25, # min votes
-        minLineLength=10, # min line length
-        maxLineGap=6 # max line distance
+        np.array([]), # vector de salida
+        rho=1, # distancia en píxeles
+        angle=(np.pi / 180), # distancia angular en radianes
+        min_threshold=25, # mínimo de votos
+        minLineLength=10, # longitud mínima de la línea
+        maxLineGap=6 # distancia máxima entre líneas
     )
 
     return lines
 
 
 def get_lane_lanes(image, lines):
-    """
-    This function combines line segments into one or two lane lines
-    If all line slopes are < 0: then we only have detected left lane
-    If all line slopes are > 0: then we only have detected right lane
-    """
+    '''
+    Combina las líneas en una o dos líneas de calzada
+    Si la pendiente de todas las líneas es < 0: todas las líneas son del lado izquierdo
+    Si la pendiente de todas las líneas es > 0: todas las líneas son del lado derecho
+    '''
+
     lane_lines = []
     if lines is None:
-        logging.info('No line_segment segments detected')
         return lane_lines
 
     height, width, _ = image.shape
@@ -128,13 +129,13 @@ def get_lane_lanes(image, lines):
     right_fit = []
 
     boundary = 1/3
-    left_region_boundary = width * (1 - boundary)  # left lane line segment should be on left 2/3 of the screen
-    right_region_boundary = width * boundary # right lane line segment should be on left 2/3 of the screen
+    left_region_boundary = width * (1 - boundary)  # la línea izquierda debería estar en el tercio izquierdo de la pantalla
+    right_region_boundary = width * boundary # la línea izquierda debería estar en el tercio derecho de la pantalla
 
     for line in lines:
         for x1, y1, x2, y2 in line:
             if x1 == x2:
-                logging.info('skipping vertical line segment (slope=inf): %s' % line)
+                logging.info('Ignorando línea vertical (pendiente = infinito): %s' % line)
                 continue
             fit = np.polyfit((x1, x2), (y1, y2), 1)
             slope = fit[0]
@@ -154,22 +155,20 @@ def get_lane_lanes(image, lines):
     if len(right_fit) > 0:
         lane_lines.append(make_points(frame, right_fit_average))
 
-    logging.debug('lane lines: %s' % lane_lines)  # [[[316, 720, 484, 432]], [[1009, 720, 718, 432]]]
+    logging.debug('líneas de calzada: %s' % lane_lines)  # [[[316, 720, 484, 432]], [[1009, 720, 718, 432]]]
 
     return lane_lines
 
 
 def compute_steering_angle(frame, lane_lines):
-    """ Find the steering angle based on lane line coordinate
-        We assume that camera is calibrated to point to dead center
-    """
+    ''' Calcula el ángulo de giro a partir de las líneas de la calzada '''
+
     if len(lane_lines) == 0:
-        logging.info('No lane lines detected, do nothing')
         return -90
 
     height, width, _ = frame.shape
     if len(lane_lines) == 1:
-        logging.debug('Only detected one lane line, just follow it. %s' % lane_lines[0])
+        logging.debug('Se ha detectado una línea. %s' % lane_lines[0])
         x1, _, x2, _ = lane_lines[0][0]
         x_offset = x2 - x1
     else:
@@ -178,28 +177,22 @@ def compute_steering_angle(frame, lane_lines):
         mid = int(width / 2)
         x_offset = (left_x2 + right_x2) / 2 - mid
 
-    # find the steering angle, which is angle between navigation direction to end of center line
     y_offset = int(height / 2)
 
-    angle_to_mid_radian = math.atan(x_offset / y_offset)  # angle (in radian) to center vertical line
-    angle_to_mid_deg = int(angle_to_mid_radian * 180.0 / math.pi)  # angle (in degrees) to center vertical line
-    steering_angle = angle_to_mid_deg + 95  # this is the steering angle needed by picar front wheel
+    angle_to_mid_radian = math.atan(x_offset / y_offset)
+    angle_to_mid_deg = int(angle_to_mid_radian * 180.0 / math.pi)
+    steering_angle = angle_to_mid_deg + 90
 
     logging.debug('new steering angle: %s' % steering_angle)
     return steering_angle
 
 
 def stabilize_steering_angle(curr_steering_angle, new_steering_angle, num_of_lane_lines, max_angle_deviation_two_lines=5, max_angle_deviation_one_lane=3):
-    """
-    Using last steering angle to stabilize the steering angle
-    This can be improved to use last N angles, etc
-    if new angle is too different from current angle, only turn by max_angle_deviation degrees
-    """
+    ''' Acota el ángulo de giro para evitar giros bruscos '''
+
     if num_of_lane_lines == 2 :
-        # if both lane lines detected, then we can deviate more
         max_angle_deviation = max_angle_deviation_two_lines
     else :
-        # if only one lane detected, don't deviate too much
         max_angle_deviation = max_angle_deviation_one_lane
     
     angle_deviation = new_steering_angle - curr_steering_angle
@@ -208,13 +201,13 @@ def stabilize_steering_angle(curr_steering_angle, new_steering_angle, num_of_lan
                                         + max_angle_deviation * angle_deviation / abs(angle_deviation))
     else:
         stabilized_steering_angle = new_steering_angle
-    logging.info('Proposed angle: %s, stabilized angle: %s' % (new_steering_angle, stabilized_steering_angle))
+    logging.info('Ángulo calculado: %s, ángulo estabilizado: %s' % (new_steering_angle, stabilized_steering_angle))
 
     return stabilized_steering_angle
 
 
 ############################
-# Utility Functions
+# Funciones de utilidad
 ############################
 def display_lines(frame, lines, line_color=(0, 255, 0), line_width=10):
     line_image = np.zeros_like(frame)
@@ -227,17 +220,11 @@ def display_lines(frame, lines, line_color=(0, 255, 0), line_width=10):
 
 
 def display_heading_line(frame, steering_angle, line_color=(0, 0, 255), line_width=5, ):
+    ''' Muestra por pantalla una línea en la dirección a la que se dirije el coche '''
+    
     heading_image = np.zeros_like(frame)
     height, width, _ = frame.shape
 
-    # figure out the heading line from steering angle
-    # heading line (x1,y1) is always center bottom of the screen
-    # (x2, y2) requires a bit of trigonometry
-
-    # Note: the steering angle of:
-    # 0-89 degree: turn left
-    # 90 degree: going straight
-    # 91-180 degree: turn right 
     steering_angle_radian = steering_angle / 180.0 * math.pi
     x1 = int(width / 2)
     y1 = height
@@ -261,19 +248,19 @@ def show_image(title, frame, show=_SHOW_IMAGE):
 
 
 def make_points(frame, line):
+    ''' Crea los puntos que forman la línea de dirección '''
     height, width, _ = frame.shape
     slope, intercept = line
-    y1 = height  # bottom of the frame
-    y2 = int(y1 * 1 / 2)  # make points from middle of the frame down
+    y1 = height 
+    y2 = int(y1 * 1 / 2)  
 
-    # bound the coordinates within the frame
     x1 = max(-width, min(2 * width, int((y1 - intercept) / slope)))
     x2 = max(-width, min(2 * width, int((y2 - intercept) / slope)))
     return [[x1, y1, x2, y2]]
 
 
 ############################
-# Test Functions
+# Funciones de prueba
 ############################
 def test_photo(file):
     land_follower = HandCodedLaneFollower()
@@ -288,7 +275,7 @@ def test_video(video_file):
     lane_follower = HandCodedLaneFollower()
     cap = cv2.VideoCapture(video_file + '.avi')
 
-    # skip first second of video.
+    # salta el primer segundo de video
     for i in range(3):
         _, frame = cap.read()
 
@@ -305,7 +292,7 @@ def test_video(video_file):
             
             cv2.imwrite("%s_overlay_%03d.png" % (video_file, i), combo_image)
             video_overlay.write(combo_image)
-            cv2.imshow("Road with Lane line", combo_image)
+            cv2.imshow("Carretera con líneas de calzada", combo_image)
 
             i += 1
             if cv2.waitKey(1) & 0xFF == ord('q'):
