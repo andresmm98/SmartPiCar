@@ -41,7 +41,7 @@ A modo de resumen orientativo, los pasos a seguir para la preparación del coche
    - **save_training_data.py**: a partir de un video de conducción, guarda una imagen de cada fotograma con su respectivo ángulo de giro, calculado mediante hand_coded_lane_follower.py.
    - **smart_pi_car.py**: realiza la conducción del coche de la forma escogida por el usuario. Puede ser mediante el teclado o mediante los programas anteriores. También permite guardar imágenes etiquetadas durante la conducción manual.
 
-- **MODELS**: contiene los distintos modelos de aprendizaje profundo entrenados y el código empleado
+This repository is made for SunFounderPiCar-V
 
 
 *This project is made by Andrés Martínez Martínez for the Final Year Project of Computing Engineering in Polytechnic University of Valencia.*
