@@ -46,4 +46,5 @@ A modo de resumen, los pasos para la preparación del coche han sido los siguien
    - **code/cnn-nvidia**: modelo con mejor rendimiento. Está basado en una arquitectura propuesta por Nvidia.
    - **models/lane-navigation-best-model**: modelo con mejores resultados, utilizado en _autonomous_driver.py_.
 
-*This project is made by Andrés Martínez Martínez for the Final Year Project of Computing Engineering in Polytechnic University of Valencia.*
+
+*This project was made by Andrés Martínez Martínez for the Final Year Project of Computer Engineering in Polytechnic University of Valencia.*
