@@ -1,7 +1,7 @@
 # SMART PI CAR
 #### Un pequeño coche atónomo capaz de seguir trazados no vistos previamente
 
-https://github.com/andresmm98/Smart-Pi-Car/assets/74978050/1ff6c54e-181c-475f-b72f-86e8466ac119
+https://github.com/andresmm98/Smart-Pi-Car/assets/74978050/008b2022-e49a-43e9-a5a2-7f268404ab1b
 
 ## HARDWARE EMPLEADO
 
