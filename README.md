@@ -1,6 +1,8 @@
 # SMART PI CAR
 #### Un pequeño coche atónomo capaz de seguir trazados no vistos previamente
 
+https://github.com/andresmm98/Smart-Pi-Car/assets/74978050/1ff6c54e-181c-475f-b72f-86e8466ac119
+
 ## HARDWARE EMPLEADO
 
 Sun Founder PiCar-V kit
@@ -41,7 +43,7 @@ A modo de resumen, los pasos para la preparación del coche han sido los siguien
    - **save_training_data.py**: a partir de un video de conducción, guarda una imagen de cada fotograma con su respectivo ángulo de giro, calculado mediante hand_coded_lane_follower.py.
    - **smart_pi_car.py**: conduce el coche de la forma escogida por el usuario: manualmente o empleando uno de los programas anteriores. También permite guardar imágenes etiquetadas durante la conducción manual.
 - **models**: contiene el código de los modelos de aprendizaje automático y varios modelos entrenados
-   - **code/cnn-nvidia**: contiene el código del modelo con mejor rendimiento.
-
+   - **code/cnn-nvidia**: modelo con mejor rendimiento. Está basado en una arquitectura propuesta por Nvidia.
+   - **models/lane-navigation-best-model**: modelo con mejores resultados, utilizado en _autonomous_driver.py_.
 
 *This project is made by Andrés Martínez Martínez for the Final Year Project of Computing Engineering in Polytechnic University of Valencia.*
