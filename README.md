@@ -1,5 +1,5 @@
 # SMART PI CAR
-#### Un pequeño coche atónomo capaz de seguir trazados no vistos previamente
+#### Un pequeño coche atónomo capaz de seguir trazados no vistos previamente. Basado en el trabajo de dctian/DeepPiCar.
 
 https://github.com/andresmm98/Smart-Pi-Car/assets/74978050/008b2022-e49a-43e9-a5a2-7f268404ab1b
 
