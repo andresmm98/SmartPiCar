@@ -25,46 +25,46 @@ class SmartPiCar(object):
     STRAIGHT_ANGLE = 90
 
     def __init__(self):
-        """ Inicializa el coche y la cámara """
-        logging.info("Creando un Smart Pi Car...")
+
+        logging.info("Creating a Smart Pi Car...")
 
         picar.setup()
 
-        logging.debug("Preparando la cámara...")
+        logging.debug("Setting up the camera...")
         self.camera = cv2.VideoCapture(0)
         self.camera.set(3, self.CAMERA_WIDTH)
         self.camera.set(4, self.CAMERA_HEIGHT)
 
         self.horizontal_servo = picar.Servo.Servo(1)
-        self.horizontal_servo.offset = 20  # calibra el servo al centro
+        self.horizontal_servo.offset = 20  # calibrates servum to the center
         self.horizontal_servo.write(self.STRAIGHT_ANGLE)
 
         self.vertical_servo = picar.Servo.Servo(2)
-        self.vertical_servo.offset = 0  # calibra el servo al centro
+        self.vertical_servo.offset = 0  # calibrates servum to the center
         self.vertical_servo.write(self.STRAIGHT_ANGLE)
-        logging.debug("Cámara lista.")
+        logging.debug("Camera is ready.")
 
-        logging.debug("Preparando las ruedas...")
+        logging.debug("Setting up the wheels...")
         self.back_wheels = picar.back_wheels.Back_Wheels()
-        self.back_wheels.speed = 0  # El rango de velocidad es 0 - 100
+        self.back_wheels.speed = 0  # speed range is 0 - 100
 
         self.steering_angle = self.STRAIGHT_ANGLE
         self.front_wheels = picar.front_wheels.Front_Wheels()
-        self.front_wheels.turning_offset = -10  # calibra el servo al centro
-        self.front_wheels.turn(self.steering_angle)  # El ángulo de giro es 45 (izquierda) - 90 (recto) - 135 (derecha)
-        logging.debug("Ruedas listas.")
+        self.front_wheels.turning_offset = -10  # calibrates servum to the center
+        self.front_wheels.turn(self.steering_angle)  # Steering angle range is 45 (left) - 90 (straight) - 135 (right)
+        logging.debug("Wheels ready.")
 
         self.short_date_str = datetime.datetime.now().strftime("%d%H%M")
         self.lane_follower = LaneFollower(self)
         self.hand_coded_lane_follower = HandCodedLaneFollower(self)
         
-        ''' # Graba video
+        # Records a video
         self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
         self.date_str = datetime.datetime.now().strftime("%y%m%d-%H%M%S")
         self.video = cv2.VideoWriter('../footage/car-video-%s.avi' % self.date_str,
                                      self.fourcc,
                                      20.0,
-                                     (self.camera_width, self.camera_height))'''
+                                     (self.camera_width, self.camera_height))
         
         logging.info("Smart Pi Car creado con éxito.")
 
@@ -162,7 +162,7 @@ class SmartPiCar(object):
             while self.camera.isOpened():
                 # Get, write and show current frame
                 _, frame = self.camera.read()
-                # self.video.write(frame)
+                self.video.write(frame)
 
                 image_lane = self.hand_coded_lane_follower.follow_lane(frame)
 
