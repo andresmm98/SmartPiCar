@@ -1,8 +1,9 @@
-#------------------------------------------------------------------------------
-# El programa crea una clase LaneFollower,
-# la cual calcula el ángulo de giro del coche para una imagen de entrada
-# utilizando un modelo de aprendizaje profundo compilado en formato .tflite.
-#------------------------------------------------------------------------------
+"""
+This program uses a trained deep learning model to get the steering angle.
+
+It executes the inference of the model locally and displays a lane line
+to where the car is heading.
+"""
 
 import cv2
 import numpy as np
@@ -15,23 +16,25 @@ class LaneFollower(object):
 
     def __init__(self,
                  car=None,
-                 model_path='/home/pi/Smart-Pi-Car/models/lane-navigation-best-model.tflite'):
-        logging.info('Poniendo a punto el procesador')
+                 model_path='/home/pi/Smart-Pi-Car/models/ \
+                    lane-navigation-best-model.tflite'):
+        logging.info('Starting the processor...')
 
         self.car = car
         self.curr_steering_angle = 90
         
-        # Inicializa el intérprete de Tensorflow
+        # Initialize Tensorflow interpreter
         self.interpreter = edgetpu.make_interpreter(model_path)
         self.interpreter.allocate_tensors()
 
 
     def follow_lane(self, frame):
-        ''' Método principal de la clase, llama a los demás '''
-
+        """Compute and display car direction."""
         new_steering_angle = self.compute_steering_angle(frame)
-        self.curr_steering_angle = self.stabilize_steering_angle(new_steering_angle)
-        logging.debug(f"Ángulo de giro: {self.curr_steering_angle - 90} grados")
+        self.curr_steering_angle = self.stabilize_steering_angle(
+            new_steering_angle
+            )
+        logging.debug(f"Steering angle {self.curr_steering_angle - 90}º")
 
         if self.car is not None:
             self.car.front_wheels.turn(self.curr_steering_angle)
@@ -41,21 +44,21 @@ class LaneFollower(object):
 
 
     def stabilize_steering_angle(self, new_steering_angle):
-        ''' Acota el ángulo de giro a un máximo de 3 grados respecto al anterior '''
-
+        """Limit the degrees turned from previous direction to 3º."""
         stabilized_steering_angle = new_steering_angle
         max_angle_deviation = 3
         angle_deviation = new_steering_angle - self.curr_steering_angle
         if angle_deviation > max_angle_deviation:
-            stabilized_steering_angle = self.curr_steering_angle + max_angle_deviation
+            stabilized_steering_angle = self.curr_steering_angle 
+            + max_angle_deviation
         elif angle_deviation < -max_angle_deviation:
-            stabilized_steering_angle = self.curr_steering_angle - max_angle_deviation
+            stabilized_steering_angle = self.curr_steering_angle 
+            - max_angle_deviation
         return stabilized_steering_angle
             
 
     def compute_steering_angle(self, frame):
-        ''' Calcula el ángulo de giro mediante el modelo '''
-        
+        """Use the trained model to compute the angle."""
         input_frame = img_preprocess(frame)
         common.set_input(self.interpreter, input_frame)
 
@@ -63,12 +66,12 @@ class LaneFollower(object):
         self.interpreter.invoke()
         steering_angle = self.interpreter.get_tensor(output_details['index'])
 
-        steering_angle = int(steering_angle + 0.5) # redondeo
+        steering_angle = int(steering_angle + 0.5)
         return steering_angle
 
 
 def img_preprocess(image):
-    ''' Ajusta el fotograma a la entrada del modelo '''
+    """Suit the image for the model input needs."""
 
     height = len(image)
     image = image[int(height/2):,:,:]
@@ -81,8 +84,9 @@ def img_preprocess(image):
     return image
 
 
-def display_heading_line(frame, steering_angle, line_color=(0, 0, 255), line_width=5):
-    ''' Muestra por pantalla una línea en la dirección a la que se dirije el coche '''
+def display_heading_line(frame, steering_angle, 
+                         line_color=(0, 0, 255), line_width=5):
+    """Show given lanes on top of given image."""
     
     heading_image = np.zeros_like(frame)
     height, width, _ = frame.shape
