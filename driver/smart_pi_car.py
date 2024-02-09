@@ -23,6 +23,7 @@ class SmartPiCar(object):
     CAMERA_WIDTH = 320
     CAMERA_HEIGHT = 240
     STRAIGHT_ANGLE = 90
+    car_speed = 20  # speed range is 0 - 100
 
     def __init__(self):
 
@@ -46,7 +47,7 @@ class SmartPiCar(object):
 
         logging.debug("Setting up the wheels...")
         self.back_wheels = picar.back_wheels.Back_Wheels()
-        self.back_wheels.speed = 0  # speed range is 0 - 100
+        self.back_wheels.speed = self.car_speed 
 
         self.steering_angle = self.STRAIGHT_ANGLE
         self.front_wheels = picar.front_wheels.Front_Wheels()
@@ -66,7 +67,7 @@ class SmartPiCar(object):
                                      20.0,
                                      (self.camera_width, self.camera_height))
         
-        logging.info("Smart Pi Car creado con éxito.")
+        logging.info("Smart Pi Car created successfully.")
 
 
     def __enter__(self):
@@ -75,25 +76,25 @@ class SmartPiCar(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         if traceback is not None:
-            logging.error(f"Parando la ejecución con el error {traceback}")
+            logging.error(f"Stopping execution with error {traceback}")
 
         self.cleanup()
 
 
     def cleanup(self):
-        """ Resetea el hardware """
-        logging.info("Parando el coche, restaurando el hardware...")
+        """Restore the hardware."""
+        logging.info("Stopping the car, restoring the hardware...")
         self.back_wheels.speed = 0
         self.front_wheels.turn(self.STRAIGHT_ANGLE)
         self.camera.release()
-        #self.video.release()
+        self.video.release()
         cv2.destroyAllWindows()
-        logging.info("Coche detenido.")
+        logging.info("Car has stopped.")
         sys.exit()
 
 
     def manual_driver(self):
-        """ Conduce mediante las teclas A (derecha) y D (izquierda) """
+        """Drive with keyboard keys A (left) and D (right)."""
         pressed_key = cv2.waitKey(50) & 0xFF
         if pressed_key == ord('a'):
             if self.steering_angle > 40: self.steering_angle -= 3
@@ -101,22 +102,23 @@ class SmartPiCar(object):
         elif pressed_key == ord('d'):
             if self.steering_angle < 140: self.steering_angle += 3
             self.front_wheels.turn(self.steering_angle)
-        elif key & 0xFF == ord('p'):
-            self.back_wheels.speed = 0 # pausa
-        elif key & 0xFF == ord('g'):
-            self.back_wheels.speed = speed # go, arranca
+        elif pressed_key & 0xFF == ord('p'):
+            self.back_wheels.speed = 0  # stops
+        elif pressed_key & 0xFF == ord('g'):
+            self.back_wheels.speed = self.car_speed  # starts moving
         elif pressed_key == ord('q'):
             self.cleanup()
 
 
-    def drive(self, mode, speed=0):
-        """ Arranca el coche """
+    def drive(self, mode, speed=car_speed):
+        """Starts the car"""
+        self.car_speed = speed
         self.back_wheels.speed = speed
         i = 0
         if mode == "auto":
 
-            logging.info("Iniciando la conducción autónoma...")
-            logging.info(f"Arrancando a una velocidad de {speed}...")
+            logging.info("Initiating autonomous driving...")
+            logging.info(f"Starting at a speed of {speed}...")
             
             while self.camera.isOpened():
                 _, frame = self.camera.read()
@@ -136,10 +138,10 @@ class SmartPiCar(object):
                 elif key & 0xFF == ord('g'):
                     self.back_wheels.speed = speed
         
-        elif mode == "entrenamiento_manual": 
+        elif mode == "manual": 
 
-            logging.info("Iniciando la conducción manual...")
-            logging.info(f"Arrancando a una velocidad de {speed}...")
+            logging.info("Starting manual driving...")
+            logging.info(f"Driving at a speed of {speed}...")
             os.chdir('../footage')
 
             while self.camera.isOpened():
@@ -148,16 +150,17 @@ class SmartPiCar(object):
 
                 self.manual_driver()
 
-                cv2.imwrite('v%s-f%03d-a%03d.png' % (self.short_date_str, i, self.steering_angle), frame)
+                cv2.imwrite(f'v{self.short_date_str} \
+                            -f{i}-a{self.steering_angle}.png', frame)
                 
                 i += 1 
                 time.sleep(0.2)
 
-        elif mode == "entrenamiento_auto":
+        elif mode == "handcoded":
             self.back_wheels.speed = 30
 
-            logging.info("Iniciando la conducción autónoma...")
-            logging.info(f"Arrancando a una velocidad de {speed}...")
+            logging.info("Strating autonomous driving...")
+            logging.info(f"Driving at a speed of {speed}...")
 
             while self.camera.isOpened():
                 # Get, write and show current frame
@@ -180,15 +183,15 @@ class SmartPiCar(object):
                 i += 1
             
         else:
-            self.back_wheels.speed = 20
+            self.back_wheels.speed = self.car_speed
 
-            logging.info("Iniciando la conducción manual...")
-            logging.info(f"Arrancando a una velocidad de {speed}...")
+            logging.info("Starting manual driving...")
+            logging.info(f"Driving at a speed of {speed}...")
 
             while self.camera.isOpened():
                 # Get, write and show current frame
                 _, frame = self.camera.read()
-                # self.video.write(frame)
+                self.video.write(frame)
                 cv2.imshow('Video',frame)
 
                 self.manual_driver()
@@ -208,12 +211,11 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(asctime)s: %(message)s')
 
     if len(sys.argv) > 1:
-        if sys.argv[1] not in ['manual', 'training','auto', 'hand_coded']:
-            logging.error('Por favor, escriba el modo de conducción deseado después del nombre del programa.\n \
-- "manual": conducción mediante el teclado\n \
-- "auto": conducción autónoma mediante inteligencia artificial\n \
-- "entrenamiento_manual": conducción mediante el teclado recopilando datos\n \
-- "entrenamiento_auto": conducción autónoma (sin inteligencia artificial) recopilando datos')
+        if sys.argv[1] not in ['auto', 'manual','handcoded']:
+            logging.error('Please, write down the desired driving mode after the name of the program.\n \
+- "manual": drive using the keyboard keys "a" (left) & "d" (right)\n \
+- "auto": autonomous driving using artificial intelligence\n \
+- "handcoded": autonomous driving without artificial intelligence')
             sys.exit()
         else: main(sys.argv[1])
 
