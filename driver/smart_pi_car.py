@@ -1,10 +1,11 @@
-#------------------------------------------------------------------------------
-# El programa inicializa un coche SmartPiCar y lo conduce de la forma escogida por el usuario:
-# - Manual: mediante el teclado
-# - Auto: mediante el modelo de aprendizaje profundo
-# - Entrenamiento manual: manual recopilando imágenes etiquetadas
-# - Entrenamiento auto: mediante una programación explícita, guardando un video de la conducción
-#------------------------------------------------------------------------------
+"""
+This program is responsible for driving the car as the user wants to.
+
+The car can be driven manually with the keyboard & autonomously,
+both using a trained deep learning model or a hand-coded program.
+While driving, the program stores the frames coming from the camera
+as labelled images for training the neural network.
+"""
 
 import logging
 import picar
@@ -59,7 +60,7 @@ class SmartPiCar(object):
         self.lane_follower = LaneFollower(self)
         self.hand_coded_lane_follower = HandCodedLaneFollower(self)
         
-        # Records a video
+        # Record a video
         self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
         self.date_str = datetime.datetime.now().strftime("%y%m%d-%H%M%S")
         self.video = cv2.VideoWriter('../footage/car-video-%s.avi' % self.date_str,
@@ -111,7 +112,12 @@ class SmartPiCar(object):
 
 
     def drive(self, mode, speed=car_speed):
-        """Starts the car"""
+        """Drive the car using the desired mode.
+        
+        The autonomous driving mode uses a trained deep learning model.
+        The manual driving mode & the handocded one store labelled
+        driving frames for training the model.
+        """
         self.car_speed = speed
         self.back_wheels.speed = speed
         i = 0
