@@ -1,9 +1,10 @@
-#------------------------------------------------------------------------------
-# El programa guarda imágenes etiquetadas con el ángulo de giro
-# a partir de los fotogramas de un vídeo de conducción.
-# 
-# El ángulo se calcula mediante una instancia de la clase HandCodedLaneFollower.
-#------------------------------------------------------------------------------
+"""
+This program saves the driving frames as labelled images.
+
+The desired steering angle (label) for each frame 
+is computed by hand_coded_lane_follower.py
+and saved in the name of the image.
+"""
 
 import cv2
 import sys
