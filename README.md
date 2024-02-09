@@ -1,5 +1,5 @@
 # SMART PI CAR
-#### Un pequeño coche atónomo capaz de seguir trazados no vistos previamente. Basado en el trabajo de dctian/DeepPiCar.
+#### A small autonomous car capable of following routes not previously seen. Based on the work of dctian/DeepPiCar.
 
 https://github.com/andresmm98/Smart-Pi-Car/assets/74978050/008b2022-e49a-43e9-a5a2-7f268404ab1b
 
@@ -17,34 +17,34 @@ Acelerador Coral Edge TPU
 
 <img src="https://user-images.githubusercontent.com/74978050/189338830-47b72149-811e-47d0-9358-f1a2c3cdd8c4.png" alt="drawing" width="300"/>
 
-Complementos:
-- 2 baterías 18650 y un cargador
-- Tarjeta micro SD
+Accessories:
+- 2 18650 batteries and a charger
+- Micro SD card
 
-## SOFTWARE EMPLEADO
+## SOFTWARE USED
 
-El código está programado en Python, empleando las bibliotecas del fabricante del coche 
-y diversas bibliotecas de aprendizaje automático como Tensorflow, Keras y OpenCV.
+The code is programmed in Python, using the car manufacturer's libraries
+and various machine learning libraries such as Tensorflow, Keras and OpenCV.
 
-## GUÍA DE MONTAJE
+## ASSEMBLY GUIDE
 
-A modo de resumen, los pasos para la preparación del coche han sido los siguientes:
+As a summary, the steps to prepare the car were as follows:
 
-1. Formateo de la tarjeta micro SD en formato FAT32 e instalación del sistema operativo Raspberry Pi OS
-2. Montaje del coche, siguiendo las instrucciones del fabricante
-3. Instalación de las bibliotecas necesarias y sus dependencias
-4. Instalación de los complementos necesarios para ejecutar el modelo en el acelerador. Deben seguirse las instrucciones de la web de PyCoral.
+1. Formatting the micro SD card in FAT32 format and installing the Raspberry Pi OS operating system.
+2. Assembly of the car, following the manufacturer's instructions.
+3. Installation of the necessary libraries and their dependencies.
+4. Installing the necessary plugins to run the model in the accelerator. The instructions on the PyCoral website must be followed.
 
-## GUÍA DEL REPOSITORIO
+## REPOSITORY GUIDE
 
-- **driver**: contiene los programas de conducción
-   - **autonomous_driver.py**: realiza la inferencia del modelo de aprendizaje profundo y devuelve el ángulo de giro del coche para una imagen dada.
-   - **hand_coded_lane_follower.py**: conduce el coche de forma autónoma pero programado esxplícitamente. También devuelve el ángulo de giro.
-   - **save_training_data.py**: a partir de un video de conducción, guarda una imagen de cada fotograma con su respectivo ángulo de giro, calculado mediante hand_coded_lane_follower.py.
-   - **smart_pi_car.py**: conduce el coche de la forma escogida por el usuario: manualmente o empleando uno de los programas anteriores. También permite guardar imágenes etiquetadas durante la conducción manual.
-- **models**: contiene el código de los modelos de aprendizaje automático y varios modelos entrenados
-   - **code/cnn-nvidia**: modelo con mejor rendimiento. Está basado en una arquitectura propuesta por Nvidia.
-   - **models/lane-navigation-best-model**: modelo con mejores resultados, utilizado en _autonomous_driver.py_.
+- **driver**: stores the code for driving the car
+   - **autonomous_driver.py**: performs deep learning model inference and returns the steering angle of the car for a given image.
+   - **hand_coded_lane_follower.py**: drives the car autonomously but programmed explicitly. It also returns the steering angle.
+   - **save_training_data.py**: from a driving video, saves an image of each frame with its respective steering angle, calculated by hand_coded_lane_follower.py.
+   - **smart_pi_car.py**: Drive the car in the way chosen by the user: manually or using one of the previous programs. It also allows you to save tagged images during manual driving.
+- **models**: contains the code for the machine learning models and several trained models
+   - **code/cnn-nvidia**: best performing model. It is based on an architecture proposed by Nvidia.
+   - **models/lane-navigation-best-model**: the best model obtained, used in _autonomous_driver.py_.
 
 
 *This project was made by Andrés Martínez Martínez for the Final Year Project of Computer Engineering in Polytechnic University of Valencia.*
