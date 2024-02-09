@@ -42,7 +42,7 @@ class SmartPiCar(object):
         self.horizontal_servo.write(self.STRAIGHT_ANGLE)
 
         self.vertical_servo = picar.Servo.Servo(2)
-        self.vertical_servo.offset = 0  # calibrates servum to the center
+        self.vertical_servo.offset = 0
         self.vertical_servo.write(self.STRAIGHT_ANGLE)
         logging.debug("Camera is ready.")
 
@@ -52,8 +52,8 @@ class SmartPiCar(object):
 
         self.steering_angle = self.STRAIGHT_ANGLE
         self.front_wheels = picar.front_wheels.Front_Wheels()
-        self.front_wheels.turning_offset = -10  # calibrates servum to the center
-        self.front_wheels.turn(self.steering_angle)  # Steering angle range is 45 (left) - 90 (straight) - 135 (right)
+        self.front_wheels.turning_offset = -10  
+        self.front_wheels.turn(self.steering_angle) # from 45 to 135
         logging.debug("Wheels ready.")
 
         self.short_date_str = datetime.datetime.now().strftime("%d%H%M")
@@ -63,10 +63,12 @@ class SmartPiCar(object):
         # Record a video
         self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
         self.date_str = datetime.datetime.now().strftime("%y%m%d-%H%M%S")
-        self.video = cv2.VideoWriter('../footage/car-video-%s.avi' % self.date_str,
-                                     self.fourcc,
-                                     20.0,
-                                     (self.camera_width, self.camera_height))
+        self.video = cv2.VideoWriter(
+            f'../footage/car-video-{self.date_str}.avi',
+            self.fourcc,
+            20.0,
+            (self.camera_width, self.camera_height)
+        )
         
         logging.info("Smart Pi Car created successfully.")
 
