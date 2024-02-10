@@ -8,16 +8,18 @@ as labelled images for training the neural network.
 """
 
 import logging
-import picar
-import cv2
-import datetime
 import sys
 import os
 import time
+import datetime
+import cv2
+
+import picar
 from autonomous_driver import LaneFollower
 from hand_coded_lane_follower import HandCodedLaneFollower
 
-mode = 'auto'
+mode = "auto"
+
 
 class SmartPiCar(object):
 
@@ -48,41 +50,38 @@ class SmartPiCar(object):
 
         logging.debug("Setting up the wheels...")
         self.back_wheels = picar.back_wheels.Back_Wheels()
-        self.back_wheels.speed = self.car_speed 
+        self.back_wheels.speed = self.car_speed
 
         self.steering_angle = self.STRAIGHT_ANGLE
         self.front_wheels = picar.front_wheels.Front_Wheels()
-        self.front_wheels.turning_offset = -10  
-        self.front_wheels.turn(self.steering_angle) # from 45 to 135
+        self.front_wheels.turning_offset = -10
+        self.front_wheels.turn(self.steering_angle)  # from 45 to 135
         logging.debug("Wheels ready.")
 
         self.short_date_str = datetime.datetime.now().strftime("%d%H%M")
         self.lane_follower = LaneFollower(self)
         self.hand_coded_lane_follower = HandCodedLaneFollower(self)
-        
+
         # Record a video
-        self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
+
+        self.fourcc = cv2.VideoWriter_fourcc(*"XVID")
         self.date_str = datetime.datetime.now().strftime("%y%m%d-%H%M%S")
         self.video = cv2.VideoWriter(
-            f'../footage/car-video-{self.date_str}.avi',
+            f"../footage/car-video-{self.date_str}.avi",
             self.fourcc,
             20.0,
-            (self.camera_width, self.camera_height)
+            (self.camera_width, self.camera_height),
         )
-        
-        logging.info("Smart Pi Car created successfully.")
 
+        logging.info("Smart Pi Car created successfully.")
 
     def __enter__(self):
         return self
 
-
     def __exit__(self, exc_type, exc_value, traceback):
         if traceback is not None:
             logging.error(f"Stopping execution with error {traceback}")
-
         self.cleanup()
-
 
     def cleanup(self):
         """Restore the hardware."""
@@ -95,27 +94,27 @@ class SmartPiCar(object):
         logging.info("Car has stopped.")
         sys.exit()
 
-
     def manual_driver(self):
         """Drive with keyboard keys A (left) and D (right)."""
         pressed_key = cv2.waitKey(50) & 0xFF
-        if pressed_key == ord('a'):
-            if self.steering_angle > 40: self.steering_angle -= 3
+        if pressed_key == ord("a"):
+            if self.steering_angle > 40:
+                self.steering_angle -= 3
             self.front_wheels.turn(self.steering_angle)
-        elif pressed_key == ord('d'):
-            if self.steering_angle < 140: self.steering_angle += 3
+        elif pressed_key == ord("d"):
+            if self.steering_angle < 140:
+                self.steering_angle += 3
             self.front_wheels.turn(self.steering_angle)
-        elif pressed_key & 0xFF == ord('p'):
+        elif pressed_key & 0xFF == ord("p"):
             self.back_wheels.speed = 0  # stops
-        elif pressed_key & 0xFF == ord('g'):
+        elif pressed_key & 0xFF == ord("g"):
             self.back_wheels.speed = self.car_speed  # starts moving
-        elif pressed_key == ord('q'):
+        elif pressed_key == ord("q"):
             self.cleanup()
-
 
     def drive(self, mode, speed=car_speed):
         """Drive the car using the desired mode.
-        
+
         The autonomous driving mode uses a trained deep learning model.
         The manual driving mode & the handocded one store labelled
         driving frames for training the model.
@@ -127,43 +126,45 @@ class SmartPiCar(object):
 
             logging.info("Initiating autonomous driving...")
             logging.info(f"Starting at a speed of {speed}...")
-            
+
             while self.camera.isOpened():
                 _, frame = self.camera.read()
-                
+
                 img_lane = self.lane_follower.follow_lane(frame)
                 # self.video.write(img_lane)
-                cv2.imshow('Video', img_lane)
+
+                cv2.imshow("Video", img_lane)
 
                 i += 1
-                
+
                 key = cv2.waitKey(1)
-                if key & 0xFF == ord('q'):
+                if key & 0xFF == ord("q"):
                     self.cleanup()
                     break
-                elif key & 0xFF == ord('p'):
+                elif key & 0xFF == ord("p"):
                     self.back_wheels.speed = 0
-                elif key & 0xFF == ord('g'):
+                elif key & 0xFF == ord("g"):
                     self.back_wheels.speed = speed
-        
-        elif mode == "manual": 
+        elif mode == "manual":
 
             logging.info("Starting manual driving...")
             logging.info(f"Driving at a speed of {speed}...")
-            os.chdir('../footage')
+            os.chdir("../footage")
 
             while self.camera.isOpened():
                 _, frame = self.camera.read()
-                cv2.imshow('Video',frame)
+                cv2.imshow("Video", frame)
 
                 self.manual_driver()
 
-                cv2.imwrite(f'v{self.short_date_str} \
-                            -f{i}-a{self.steering_angle}.png', frame)
-                
-                i += 1 
-                time.sleep(0.2)
+                cv2.imwrite(
+                    f"v{self.short_date_str} \
+                            -f{i}-a{self.steering_angle}.png",
+                    frame,
+                )
 
+                i += 1
+                time.sleep(0.2)
         elif mode == "handcoded":
             self.back_wheels.speed = 30
 
@@ -172,24 +173,23 @@ class SmartPiCar(object):
 
             while self.camera.isOpened():
                 # Get, write and show current frame
+
                 _, frame = self.camera.read()
                 self.video.write(frame)
 
                 image_lane = self.hand_coded_lane_follower.follow_lane(frame)
 
-                cv2.imshow('Video',image_lane)
-                
+                cv2.imshow("Video", image_lane)
+
                 key = cv2.waitKey(1)
-                if key & 0xFF == ord('q'):
+                if key & 0xFF == ord("q"):
                     self.cleanup()
                     break
-                elif key & 0xFF == ord('p'):
+                elif key & 0xFF == ord("p"):
                     self.back_wheels.speed = 0
-                elif key & 0xFF == ord('g'):
+                elif key & 0xFF == ord("g"):
                     self.back_wheels.speed = speed
-
                 i += 1
-            
         else:
             self.back_wheels.speed = self.car_speed
 
@@ -198,33 +198,39 @@ class SmartPiCar(object):
 
             while self.camera.isOpened():
                 # Get, write and show current frame
+
                 _, frame = self.camera.read()
                 self.video.write(frame)
-                cv2.imshow('Video',frame)
+                cv2.imshow("Video", frame)
 
                 self.manual_driver()
-                
+
                 i += 1
 
 
 def main(mode):
     with SmartPiCar() as car:
         if mode == "auto":
-            car.drive(mode,40)
+            car.drive(mode, 40)
         else:
-            car.drive(mode,20)
+            car.drive(mode, 20)
 
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(asctime)s: %(message)s')
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.DEBUG, format="%(levelname)s: %(asctime)s: %(message)s"
+    )
 
     if len(sys.argv) > 1:
-        if sys.argv[1] not in ['auto', 'manual','handcoded']:
-            logging.error('Please, write down the desired driving mode after the name of the program.\n \
-- "manual": drive using the keyboard keys "a" (left) & "d" (right)\n \
-- "auto": autonomous driving using artificial intelligence\n \
-- "handcoded": autonomous driving without artificial intelligence')
+        if sys.argv[1] not in ["auto", "manual", "handcoded"]:
+            logging.error(
+                "Please, write down the desired driving mode after the name of the program.\n"
+                '- "manual": drive using the keyboard keys "a" (left) & "d" (right)\n'
+                '- "auto": autonomous driving using artificial intelligence\n'
+                '- "handcoded": autonomous driving without artificial intelligence'
+            )
             sys.exit()
-        else: main(sys.argv[1])
-
-    else: main("auto")
+        else:
+            main(sys.argv[1])
+    else:
+        main("auto")

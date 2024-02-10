@@ -5,35 +5,36 @@ It executes the inference of the model locally and displays a lane line
 to where the car is heading.
 """
 
-import cv2
 import numpy as np
 import logging
 import math
+import cv2
+
 from pycoral.utils import edgetpu
 from pycoral.adapters import common
 
+
 class LaneFollower(object):
 
-    def __init__(self,
-                 car=None,
-                 model_path='/home/pi/Smart-Pi-Car/models/ \
-                    lane-navigation-best-model.tflite'):
-        logging.info('Starting the processor...')
+    def __init__(
+        self,
+        car=None,
+        model_path="/home/pi/Smart-Pi-Car/models/lane-navigation-best-model.tflite",
+    ):
+        logging.info("Starting the processor...")
 
         self.car = car
         self.curr_steering_angle = 90
-        
+
         # Initialize Tensorflow interpreter
+
         self.interpreter = edgetpu.make_interpreter(model_path)
         self.interpreter.allocate_tensors()
-
 
     def follow_lane(self, frame):
         """Compute and display car direction."""
         new_steering_angle = self.compute_steering_angle(frame)
-        self.curr_steering_angle = self.stabilize_steering_angle(
-            new_steering_angle
-            )
+        self.curr_steering_angle = self.stabilize_steering_angle(new_steering_angle)
         logging.debug(f"Steering angle {self.curr_steering_angle - 90}º")
 
         if self.car is not None:
@@ -42,20 +43,17 @@ class LaneFollower(object):
 
         return final_frame
 
-
     def stabilize_steering_angle(self, new_steering_angle):
         """Limit the degrees turned from previous direction to 3º."""
         stabilized_steering_angle = new_steering_angle
         max_angle_deviation = 3
         angle_deviation = new_steering_angle - self.curr_steering_angle
+
         if angle_deviation > max_angle_deviation:
-            stabilized_steering_angle = self.curr_steering_angle 
-            + max_angle_deviation
+            stabilized_steering_angle = self.curr_steering_angle + max_angle_deviation
         elif angle_deviation < -max_angle_deviation:
-            stabilized_steering_angle = self.curr_steering_angle 
-            - max_angle_deviation
+            stabilized_steering_angle = self.curr_steering_angle - max_angle_deviation
         return stabilized_steering_angle
-            
 
     def compute_steering_angle(self, frame):
         """Use the trained model to compute the angle."""
@@ -64,7 +62,7 @@ class LaneFollower(object):
 
         output_details = self.interpreter.get_output_details()[0]
         self.interpreter.invoke()
-        steering_angle = self.interpreter.get_tensor(output_details['index'])
+        steering_angle = self.interpreter.get_tensor(output_details["index"])
 
         steering_angle = int(steering_angle + 0.5)
         return steering_angle
@@ -73,9 +71,9 @@ class LaneFollower(object):
 def img_preprocess(image):
     """Suit the image for the model input needs."""
     height = len(image)
-    image = image[int(height/2):,:,:]
+    image = image[int(height / 2) :, :, :]
 
-    image = cv2.resize(image, (200,66))
+    image = cv2.resize(image, (200, 66))
 
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -83,10 +81,14 @@ def img_preprocess(image):
     return image
 
 
-def display_heading_line(frame, steering_angle, 
-                         line_color=(0, 0, 255), line_width=5):
+def display_heading_line(
+    frame,
+    steering_angle,
+    line_color=(0, 0, 255),
+    line_width=5,
+):
     """Show given lanes on top of given image."""
-    
+
     heading_image = np.zeros_like(frame)
     height, width, _ = frame.shape
 
@@ -102,5 +104,5 @@ def display_heading_line(frame, steering_angle,
     return heading_image
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
