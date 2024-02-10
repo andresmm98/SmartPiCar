@@ -72,7 +72,6 @@ class LaneFollower(object):
 
 def img_preprocess(image):
     """Suit the image for the model input needs."""
-
     height = len(image)
     image = image[int(height/2):,:,:]
 
