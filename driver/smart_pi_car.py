@@ -18,18 +18,16 @@ import picar
 from autonomous_driver import LaneFollower
 from hand_coded_lane_follower import HandCodedLaneFollower
 
-mode = "auto"
 
-
-class SmartPiCar(object):
+class SmartPiCar:
 
     CAMERA_WIDTH = 320
     CAMERA_HEIGHT = 240
     STRAIGHT_ANGLE = 90
-    car_speed = 20  # speed range is 0 - 100
+    default_speed = 20  # speed range is 0 - 100
 
     def __init__(self):
-
+        """initialize camera and wheels."""
         logging.info("Creating a Smart Pi Car...")
 
         picar.setup()
@@ -50,7 +48,7 @@ class SmartPiCar(object):
 
         logging.debug("Setting up the wheels...")
         self.back_wheels = picar.back_wheels.Back_Wheels()
-        self.back_wheels.speed = self.car_speed
+        self.back_wheels.speed = self.default_speed
 
         self.steering_angle = self.STRAIGHT_ANGLE
         self.front_wheels = picar.front_wheels.Front_Wheels()
@@ -59,8 +57,6 @@ class SmartPiCar(object):
         logging.debug("Wheels ready.")
 
         self.short_date_str = datetime.datetime.now().strftime("%d%H%M")
-        self.lane_follower = LaneFollower(self)
-        self.hand_coded_lane_follower = HandCodedLaneFollower(self)
 
         # Record a video
 
@@ -70,7 +66,7 @@ class SmartPiCar(object):
             f"../footage/car-video-{self.date_str}.avi",
             self.fourcc,
             20.0,
-            (self.camera_width, self.camera_height),
+            (self.CAMERA_WIDTH, self.CAMERA_HEIGHT),
         )
 
         logging.info("Smart Pi Car created successfully.")
@@ -80,7 +76,7 @@ class SmartPiCar(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         if traceback is not None:
-            logging.error(f"Stopping execution with error {traceback}")
+            logging.error("Stopping execution with error %s", traceback)
         self.cleanup()
 
     def cleanup(self):
@@ -108,29 +104,30 @@ class SmartPiCar(object):
         elif pressed_key & 0xFF == ord("p"):
             self.back_wheels.speed = 0  # stops
         elif pressed_key & 0xFF == ord("g"):
-            self.back_wheels.speed = self.car_speed  # starts moving
+            self.back_wheels.speed = self.default_speed  # starts moving
         elif pressed_key == ord("q"):
             self.cleanup()
 
-    def drive(self, mode, speed=car_speed):
+    def drive(self, mode, speed=default_speed):
         """Drive the car using the desired mode.
 
         The autonomous driving mode uses a trained deep learning model.
         The manual driving mode & the handocded one store labelled
         driving frames for training the model.
         """
-        self.car_speed = speed
         self.back_wheels.speed = speed
+        lane_follower = None
         i = 0
         if mode == "auto":
 
+            lane_follower = LaneFollower(self)
             logging.info("Initiating autonomous driving...")
-            logging.info(f"Starting at a speed of {speed}...")
+            logging.info("Starting at a speed of %i...", speed)
 
             while self.camera.isOpened():
                 _, frame = self.camera.read()
 
-                img_lane = self.lane_follower.follow_lane(frame)
+                img_lane = lane_follower.follow_lane(frame)
                 # self.video.write(img_lane)
 
                 cv2.imshow("Video", img_lane)
@@ -141,14 +138,14 @@ class SmartPiCar(object):
                 if key & 0xFF == ord("q"):
                     self.cleanup()
                     break
-                elif key & 0xFF == ord("p"):
+                if key & 0xFF == ord("p"):
                     self.back_wheels.speed = 0
                 elif key & 0xFF == ord("g"):
                     self.back_wheels.speed = speed
         elif mode == "manual":
 
             logging.info("Starting manual driving...")
-            logging.info(f"Driving at a speed of {speed}...")
+            logging.info("Driving at a speed of %i...", speed)
             os.chdir("../footage")
 
             while self.camera.isOpened():
@@ -166,10 +163,10 @@ class SmartPiCar(object):
                 i += 1
                 time.sleep(0.2)
         elif mode == "handcoded":
-            self.back_wheels.speed = 30
 
-            logging.info("Strating autonomous driving...")
-            logging.info(f"Driving at a speed of {speed}...")
+            lane_follower = HandCodedLaneFollower(self)
+            logging.info("Starting autonomous driving...")
+            logging.info("Driving at a speed of %i...", speed)
 
             while self.camera.isOpened():
                 # Get, write and show current frame
@@ -177,7 +174,7 @@ class SmartPiCar(object):
                 _, frame = self.camera.read()
                 self.video.write(frame)
 
-                image_lane = self.hand_coded_lane_follower.follow_lane(frame)
+                image_lane = lane_follower.follow_lane(frame)
 
                 cv2.imshow("Video", image_lane)
 
@@ -185,16 +182,16 @@ class SmartPiCar(object):
                 if key & 0xFF == ord("q"):
                     self.cleanup()
                     break
-                elif key & 0xFF == ord("p"):
+                if key & 0xFF == ord("p"):
                     self.back_wheels.speed = 0
                 elif key & 0xFF == ord("g"):
                     self.back_wheels.speed = speed
                 i += 1
         else:
-            self.back_wheels.speed = self.car_speed
+            self.back_wheels.speed = speed
 
             logging.info("Starting manual driving...")
-            logging.info(f"Driving at a speed of {speed}...")
+            logging.info("Driving at a speed of %i..., speed")
 
             while self.camera.isOpened():
                 # Get, write and show current frame
@@ -208,7 +205,8 @@ class SmartPiCar(object):
                 i += 1
 
 
-def main(mode):
+def main(mode="auto"):
+    "Create a car and drive it, faster if the driving is autonomous."
     with SmartPiCar() as car:
         if mode == "auto":
             car.drive(mode, 40)
@@ -233,4 +231,4 @@ if __name__ == "__main__":
         else:
             main(sys.argv[1])
     else:
-        main("auto")
+        main()
