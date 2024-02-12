@@ -1,5 +1,17 @@
-# SMART PI CAR
-#### A small autonomous car capable of following routes not previously seen. Based on the work of dctian/DeepPiCar.
+# SmartPiCar: A small car that drives itself with computer vision🚘
+
+The car can follow circuits over **floors not seen before** with only a 320x240 resolution ~$10 camera 📸. 
+It does it **locally**, without accessing the internet, employing a Raspberry Pi and doing the model inference in an Edge TPU. 
+The work is based on [DeepPiCar](https://github.com/dctian/DeepPiCar) by dctian.
+
+On top of Dctian's work, **it adds the following capabilites**:
+- **More affordability**: achieve autonomy with the SunFounder kit camera (lower quality)
+- **Keyboard training**: drive the car with the keyboard & collect labelled training images
+- **Autonomy over different floors**: thanks to more quantity & diversity of training data
+- Small tweaks to improve efficiency, like multi-threading
+- Updated the code to current conventions (2024)
+
+Due to the low-quality camera, no reliable object detection was achieved.
 
 https://github.com/andresmm98/Smart-Pi-Car/assets/74978050/008b2022-e49a-43e9-a5a2-7f268404ab1b
 
@@ -13,7 +25,7 @@ Raspberry Pi Model 3B+
 
 <img src="https://user-images.githubusercontent.com/74978050/189338829-ff91b5ce-db12-42d2-994b-6d7aa143d27d.png" alt="drawing" width="300"/>
 
-Acelerador Coral Edge TPU 
+Coral Edge TPU Accelerator
 
 <img src="https://user-images.githubusercontent.com/74978050/189338830-47b72149-811e-47d0-9358-f1a2c3cdd8c4.png" alt="drawing" width="300"/>
 
@@ -24,16 +36,21 @@ Accessories:
 ## SOFTWARE USED
 
 The code is programmed in Python, using the car manufacturer's libraries
-and various machine learning libraries such as Tensorflow, Keras and OpenCV.
+and various machine learning libraries such as Tensorflow, Keras and OpenCV. The OS of the car is the Raspberry Pi OS.
 
 ## ASSEMBLY GUIDE
 
-As a summary, the steps to prepare the car were as follows:
+As a summary, the steps to build the SmartPiCar were the following:
 
-1. Formatting the micro SD card in FAT32 format and installing the Raspberry Pi OS operating system.
-2. Assembly of the car, following the manufacturer's instructions.
+1. Formatting of the micro SD card in FAT32 format and installation of the Raspberry Pi operating system.
+2. Assembly of the car, following the [manufacturer's instructions](https://docs.sunfounder.com/projects/picar-v/en/latest/).
 3. Installation of the necessary libraries and their dependencies.
-4. Installing the necessary plugins to run the model in the accelerator. The instructions on the PyCoral website must be followed.
+4. Development of the deep learning model.
+5. Development of the code to collect training data.
+6. Collection and cleaning of the training data.
+7. Training of the model.
+9. Deployment of the model in the accelerator, following the [manufacturer's instructions](https://coral.ai/docs/edgetpu/tflite-python/#update-existing-tf-lite-code-for-the-edge-tpu).
+10. Repetition of steps 4-7 until a good solution was achieved.
 
 ## REPOSITORY GUIDE
 
