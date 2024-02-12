@@ -9,7 +9,7 @@ On top of Dctian's work, **it adds the following capabilites**:
 - **Keyboard training**: drive the car with the keyboard & collect labelled training images
 - **Autonomy over different floors**: thanks to more quantity & diversity of training data
 - Small tweaks to improve efficiency, like multi-threading
-- Updated the code to current conventions (2024)
+- Updated some deprecated functions (2024)
 
 Due to the low-quality camera, no reliable object detection was achieved.
 
@@ -52,6 +52,16 @@ As a summary, the steps to build the SmartPiCar were the following:
 9. Deployment of the model in the accelerator, following the [manufacturer's instructions](https://coral.ai/docs/edgetpu/tflite-python/#update-existing-tf-lite-code-for-the-edge-tpu).
 10. Repetition of steps 4-7 until a good solution was achieved.
 
+## MAIN DIFFICULTIES ENCOUNTERED
+- Hardware malfunctioning: both the micro SD card reader and one car servo failed frequently
+- Low quality camera: this was the bottleneck of the project. The angle of vision was so low
+  that the lane lines had to be very close to the car and sudden turn were not possible.
+- Camera positioning: since the camera is not fixed to the car & 2 degrees of variation can
+  considerably affect results, there needs to be a methodology to ensure the position of the
+  camera is always the same.
+- Processor's speed: The Raspberry Pi struggled to handle remote development and execution
+  of the code.
+  
 ## REPOSITORY GUIDE
 
 - **driver**: stores the code for driving the car
