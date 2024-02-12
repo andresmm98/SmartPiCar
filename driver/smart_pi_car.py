@@ -7,14 +7,15 @@ While driving, the program stores the frames coming from the camera
 as labelled images for training the neural network.
 """
 
+import datetime
 import logging
-import sys
 import os
 import time
-import datetime
-import cv2
+import sys
 
+import cv2
 import picar
+
 from autonomous_driver import LaneFollower
 from hand_coded_lane_follower import HandCodedLaneFollower
 

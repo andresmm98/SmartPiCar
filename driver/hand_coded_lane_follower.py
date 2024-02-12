@@ -5,17 +5,17 @@ It estimated the lane lines visible in a given image and follow them,
 using different functions from the opencv library.
 """
 
-import numpy as np
 import logging
-import datetime
-import sys
 import math
+import sys
+
 import cv2
+import numpy as np
 
 _SHOW_IMAGE = False
 
 
-class HandCodedLaneFollower(object):
+class HandCodedLaneFollower:
 
     def __init__(self, car=None):
         logging.info("Starting the driving program")
@@ -48,7 +48,7 @@ def detect_lane(frame):
     """Compute estimations of up to two pink lines in an image."""
     logging.debug("Detecting lane lines...")
 
-    edges = edges(frame)
+    edges = get_edges(frame)
     show_image("edges", edges)
 
     cropped_edges = crop_top(edges, 1 / 3)
@@ -65,7 +65,7 @@ def detect_lane(frame):
     return lane_lines, lane_lines_image
 
 
-def edges(image):
+def get_edges(image):
     """Filter borders of color pink in an image."""
     im_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
@@ -97,7 +97,7 @@ def crop_top(image, cut):
 
     cv2.fillPoly(mask, polygon, 255)
     show_image("mask", mask)
-    masked_image = cv2.bitwise_and(canny, mask)
+    masked_image = cv2.bitwise_and(image, mask)
     return masked_image
 
 
@@ -154,7 +154,7 @@ def get_lane_lines(image, lines):
     right_fit_average = np.average(right_fit, axis=0)
     if len(right_fit) > 0:
         lane_lines.append(make_points(image, right_fit_average))
-    logging.debug(f"lane lines: {lane_lines}")
+    logging.debug("lane lines: %s", (lane_lines))
 
     return lane_lines
 
@@ -165,7 +165,7 @@ def compute_steering_angle(frame, lane_lines):
         return -90
     height, width, _ = frame.shape
     if len(lane_lines) == 1:
-        logging.debug(f"A line has been detected. {lane_lines[0]}")
+        logging.debug("A line has been detected. %s", (lane_lines[0]))
         x1, _, x2, _ = lane_lines[0][0]
         x_offset = x2 - x1
     else:
@@ -179,7 +179,7 @@ def compute_steering_angle(frame, lane_lines):
     angle_to_mid_deg = int(angle_to_mid_radian * 180.0 / math.pi)
     steering_angle = angle_to_mid_deg + 90
 
-    logging.debug(f"new steering angle: {steering_angle}")
+    logging.debug("new steering angle: %i", (steering_angle))
     return steering_angle
 
 
@@ -206,7 +206,7 @@ def stabilize_steering_angle(
     else:
         stabilized_steering_angle = new_steering_angle
     logging.info(
-        f"Calculated angle: {new_steering_angle}\nStabilized angle: {stabilized_steering_angle}"
+        "Calculated angle: %iº\nStabilized angle: %iº", new_steering_angle, stabilized_steering_angle
     )
 
     return stabilized_steering_angle
@@ -322,7 +322,9 @@ def test_video(video_file):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    test_video("/home/pi/DeepPiCar/driver/data/tmp/video01")
-    # test_photo('/home/pi/DeepPiCar/driver/data/video/car_video_190427_110320_073.png')
-    # test_photo(sys.argv[1])
-    # test_video(sys.argv[1])
+    if len(sys.argv) > 1:
+        test_photo(sys.argv[1])
+        test_video(sys.argv[1])
+    else:
+        test_photo('/home/pi/DeepPiCar/driver/data/video/car_video_190427_110320_073.png')
+        test_video("/home/pi/DeepPiCar/driver/data/tmp/video01")   

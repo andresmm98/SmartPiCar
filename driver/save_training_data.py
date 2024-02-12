@@ -12,6 +12,7 @@ from hand_coded_lane_follower import HandCodedLaneFollower
 
 
 def save_image_and_steering_angle(video_file):
+    """Save the frames of a video as images with the wheels angle in the name."""
     lane_follower = HandCodedLaneFollower()
     cap = cv2.VideoCapture(video_file + ".avi")
 

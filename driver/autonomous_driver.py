@@ -5,16 +5,16 @@ It executes the inference of the model locally and displays a lane line
 to where the car is heading.
 """
 
-import numpy as np
-import logging
 import math
+import logging
+
 import cv2
-
-from pycoral.utils import edgetpu
+import numpy as np
 from pycoral.adapters import common
+from pycoral.utils import edgetpu
 
 
-class LaneFollower(object):
+class LaneFollower:
 
     def __init__(
         self,
@@ -35,7 +35,7 @@ class LaneFollower(object):
         """Compute and display car direction."""
         new_steering_angle = self.compute_steering_angle(frame)
         self.curr_steering_angle = self.stabilize_steering_angle(new_steering_angle)
-        logging.debug(f"Steering angle {self.curr_steering_angle - 90}º")
+        logging.debug("Steering angle %iº", self.curr_steering_angle - 90)
 
         if self.car is not None:
             self.car.front_wheels.turn(self.curr_steering_angle)
