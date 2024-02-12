@@ -1,9 +1,8 @@
 """
-This program saves the driving frames as labelled images.
+This program saves the frames of the driving video as labelled images.
 
-The desired steering angle (label) for each frame 
-is computed by hand_coded_lane_follower.py
-and saved in the name of the image.
+The desired steering angle (label) for each frame is computed by 
+hand_coded_lane_follower.py and saved in the name of the image.
 """
 
 import sys

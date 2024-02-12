@@ -1,10 +1,10 @@
 """
-This program is responsible for driving the car as the user wants to.
+Main module, drives the car in the mode desired by the user.
 
-The car can be driven manually with the keyboard & autonomously,
-both using a trained deep learning model or a hand-coded program.
-While driving, the program stores the frames coming from the camera
-as labelled images for training the neural network.
+The car can be driven manually with the keyboard & autonomously, both using a 
+trained deep learning model or a hand-coded program. While driving, frames of 
+the video coming from the camera are stored as labelled images for training 
+the neural network.
 """
 
 import datetime

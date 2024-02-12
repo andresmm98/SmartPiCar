@@ -1,8 +1,8 @@
 """
 This program computes the desired steering angle for a given frame.
 
-It estimated the lane lines visible in a given image and follow them,
-using different functions from the opencv library.
+It estimates the lane lines visible in a given image and follow them, using 
+different functions from the opencv library.
 """
 
 import logging

@@ -1,8 +1,8 @@
 """
-This program uses a trained deep learning model to get the steering angle.
+This program uses a deep learning model to compute the best steering angle.
 
-It executes the inference of the model locally and displays a lane line
-to where the car is heading.
+It executes the inference of the model locally and displays a lane line to 
+where the car is heading.
 """
 
 import math
