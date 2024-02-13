@@ -5,10 +5,10 @@ It does it **locally**, without accessing the internet, employing a Raspberry Pi
 The work is based on [DeepPiCar](https://github.com/dctian/DeepPiCar) by dctian.
 
 On top of Dctian's work, **it adds the following capabilites**:
-- **More affordability**: achieve autonomy with the SunFounder kit camera (lower quality)
+- Achieve autonomy with the SunFounder kit camera (lower quality)
 - **Keyboard training**: drive the car with the keyboard & collect labelled training images
 - **Autonomy over different floors**: thanks to more quantity & diversity of training data
-- Small tweaks to improve efficiency, like multi-threading
+- Small tweaks to improve efficiency, like multi-threading for preprocessing
 - Updated some deprecated functions (2024)
 
 Due to the low-quality camera, no reliable object detection was achieved.
