@@ -13,7 +13,7 @@ On top of Dctian's work, **it adds the following capabilites**:
 
 Due to the low-quality camera, no reliable object detection was achieved.
 
-https://github.com/andresmm98/Smart-Pi-Car/assets/74978050/008b2022-e49a-43e9-a5a2-7f268404ab1b
+https://github.com/anmar36a/SmartPiCar/assets/74978050/43bf119e-7c05-4544-9e88-bd75f767d007
 
 ## HARDWARE USED
 
