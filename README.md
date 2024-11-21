@@ -1,17 +1,15 @@
-# SmartPiCar: A small car that drives itself with computer vision🚘
+# SmartPiCar: A small car that drives itself thanks to computer vision
 
-The car can follow circuits over **floors not seen before** with only a 320x240 resolution ~$10 camera 📸. 
-It does it **locally**, without accessing the internet, employing a Raspberry Pi and doing the model inference in an Edge TPU. 
+The car can follow circuits marked with adhesive tape over floors that it has not seen before by seeing the road with its 320x240 resolution ~$10 camera. 
+It does it locally, employing a Raspberry Pi and doing the model inference in an Edge TPU. 
 The work is based on [DeepPiCar](https://github.com/dctian/DeepPiCar) by dctian.
 
-On top of Dctian's work, **it adds the following capabilites**:
-- Achieve autonomy with the SunFounder kit camera (lower quality)
-- **Keyboard training**: drive the car with the keyboard & collect labelled training images
-- **Autonomy over different floors**: thanks to more quantity & diversity of training data
+On top of Dctian's work, it adds the following capabilites:
+- Achieve autonomy with the SunFounder kit camera, which has a lower quality
+- Keyboard training: drive the car with the keyboard & collect labelled training images
+- Autonomy over different floors: thanks to more quantity & diversity of training data
 - Small tweaks to improve efficiency, like multi-threading for preprocessing
 - Updated some deprecated functions (2024)
-
-Due to the low-quality camera, no reliable object detection was achieved.
 
 https://github.com/anmar36a/SmartPiCar/assets/74978050/43bf119e-7c05-4544-9e88-bd75f767d007
 
